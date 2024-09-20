@@ -14,27 +14,39 @@ complexity and having to prepend config. to every single variable. If someone
 comes up with a better simple Python solution I am all ears.
 """
 
-import sys
-from ast import literal_eval
+import sys  # allows you to access the Python Interpretor (coverting python code to machine code)
+from ast import literal_eval  # converts Python literals (strings) to Python objects (dictionaries)
+
+## Iteerates through each arugment in the the script
 
 for arg in sys.argv[1:]:
     if '=' not in arg:
         # assume it's the name of a config file
         assert not arg.startswith('--')
+
+        ## READS THE CONFIG FILES
+
         config_file = arg
         print(f"Overriding config with {config_file}:")
         with open(config_file) as f:
-            print(f.read())
+            print(f.read())                # ...reading
         exec(open(config_file).read())
     else:
         # assume it's a --key=value argument
         assert arg.startswith('--')
         key, val = arg.split('=')
         key = key[2:]
+
+
+        ## CHECKS IF KEY EXISTS IN GLOBAL SPACE (space with all the variables defined)
+
         if key in globals():
             try:
                 # attempt to eval it it (e.g. if bool, number, or etc)
+
+                ## CONVERSION TO PYTHON OBJECT !!
                 attempt = literal_eval(val)
+                
             except (SyntaxError, ValueError):
                 # if that goes wrong, just use the string
                 attempt = val
